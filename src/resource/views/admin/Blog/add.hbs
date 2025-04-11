@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Trình soạn thảo TinyMCE</title>
+  <script src="https://cdn.tiny.cloud/1/jruvlkn23rj72j2f2yibehgbemrtohi9z1xc3vp174ac4nx1/tinymce/6/tinymce.min.js"
+    referrerpolicy="origin"></script>
+  <style>
+    #preview-container img {
+      max-width: 200px;
+      margin-top: 10px;
+      border-radius: 4px;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    }
+  </style>
+  <script>
+    // Hàm upload ảnh sử dụng Fetch (TinyMCE)
+    const images_upload_handler = async (blobInfo, progress) => {
+      const formData = new FormData();
+      formData.append('file', blobInfo.blob(), blobInfo.filename());
+
+      const response = await fetch('/upload-image', {
+        method: 'POST',
+        body: formData
+      });
+
+      const json = await response.json();
+
+      if (response.ok && typeof json.location === 'string') {
+        return json.location;
+      } else {
+        throw new Error('Upload thất bại hoặc phản hồi sai định dạng');
+      }
+    };
+
+    // Khởi tạo TinyMCE
+    window.addEventListener('DOMContentLoaded', function () {
+      tinymce.init({
+        selector: '#editor',
+        height: 600,
+        plugins: [
+          'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+          'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+          'insertdatetime', 'media', 'table', 'help', 'wordcount'
+        ],
+        toolbar: 'undo redo | blocks | bold italic underline strikethrough | ' +
+          'alignleft aligncenter alignright alignjustify | ' +
+          'bullist numlist outdent indent | removeformat | ' +
+          'link image media table | code fullscreen preview',
+        menubar: 'file edit view insert format tools table help',
+        content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:16px }',
+        automatic_uploads: true,
+        images_upload_handler
+      });
+
+      // Hiển thị ảnh ngay khi người dùng chọn file thumbnail
+      const thumbnailInput = document.getElementById('thumbnail');
+      const previewContainer = document.getElementById('preview-container');
+
+      thumbnailInput.addEventListener('change', function (e) {
+        const file = e.target.files[0];
+        if (file) {
+          const imgPreview = document.createElement('img');
+          imgPreview.src = URL.createObjectURL(file);
+          imgPreview.alt = 'Xem trước ảnh đại diện';
+
+          // Xóa ảnh cũ nếu có
+          previewContainer.innerHTML = '';
+          previewContainer.appendChild(imgPreview);
+        }
+      });
+    });
+  </script>
+</head>
+
+<body>
+  <h2>Soạn thảo nội dung</h2>
+  <form method="POST" action="/admin/blog/store" enctype="multipart/form-data">
+    <label for="title">Tiêu đề:</label><br>
+    <input type="text" id="title" name="title" style="width: 100%; padding: 8px;"><br><br>
+
+    <label for="description">Mô tả ngắn:</label><br>
+    <textarea id="description" name="description" rows="4" style="width: 100%; padding: 8px;"></textarea><br><br>
+
+    <label for="thumbnail">Ảnh đại diện:</label><br>
+    <input type="file" id="thumbnail" name="thumbnail" accept="image/*" style="width: 100%; padding: 8px;"><br>
+    <div id="preview-container"></div><br>
+
+    <label for="editor">Nội dung:</label><br>
+    <textarea id="editor" name="noidung">
+      <p></p>
+    </textarea>
+    <br>
+    <button class="btn btn-primary" type="submit">Lưu</button>
+  </form>
+</body>
+
+</html>

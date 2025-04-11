@@ -1,0 +1,117 @@
+<!-- Blog Start -->
+<!-- Header Start -->
+<div class="container-fluid bg-breadcrumb">
+    <ul class="breadcrumb-animation">
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+    </ul>
+    <div class="container text-center py-5" style="max-width: 900px;">
+        <h3 class="display-3 mb-4 wow fadeInDown" data-wow-delay="0.1s">Our Blog</h3>
+        <ol class="breadcrumb justify-content-center mb-0 wow fadeInDown" data-wow-delay="0.3s">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item"><a href="#">Pages</a></li>
+            <li class="breadcrumb-item active text-primary">Blog</li>
+        </ol>
+    </div>
+</div>
+<!-- Header End -->
+
+<div class="container-fluid blog pb-3">
+    <div class="container py-5">
+        <div class="text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 900px;">
+            <h4 class="text-primary">Tin tức & Bài viết</h4>
+            <h1 class="display-5 mb-4">Khám phá những bài viết mới nhất từ chúng tôi</h1>
+
+        </div>
+
+        <div class="row g-4">
+            {{#each blogs}}
+            <div class="col-lg-4 col-md-6 d-flex">
+                <div class="blog-item shadow-sm border rounded-3 w-100 d-flex flex-column">
+                    <div class="blog-img position-relative" style="height: 200px; overflow: hidden;">
+                        <img src="/public{{thumbnail}}" class="img-fluid w-100 h-100 object-fit-cover" alt="{{title}}">
+                        <div class="position-absolute bottom-0 start-0 bg-dark text-white px-2 py-1 small opacity-75">
+                            <i class="fa fa-clock me-1"></i> {{formatDate created_at 'DD/MM/YYYY'}}
+                        </div>
+                    </div>
+                    <div class="blog-content p-3 d-flex flex-column justify-content-between flex-grow-1">
+                        <div>
+                            <h5>{{title}}</h5>
+                            <p class="text-muted small line-clamp-4">{{description}}</p>
+                        </div>
+                        <a href="/blog/detail/{{id}}" class="btn btn-outline-primary btn-sm mt-2 align-self-start">Xem
+                            chi tiết</a>
+                    </div>
+                </div>
+            </div>
+            {{/each}}
+        </div>
+        <!-- Pagination -->
+        <style>
+            .line-clamp-4 {
+                display: -webkit-box;
+                -webkit-line-clamp: 4;
+                /* Số dòng muốn hiển thị */
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .pagination .page-item.active .page-link {
+                background-color: #0d6efd;
+                border-color: #0d6efd;
+                color: white;
+            }
+
+            .pagination .page-link {
+                color: #0d6efd;
+                font-weight: 500;
+            }
+
+            .pagination .page-item.disabled .page-link {
+                color: #ccc;
+            }
+        </style>
+
+        <nav class="d-flex justify-content-center mt-5">
+            <ul class="pagination pagination-rounded shadow-sm">
+                {{#if hasPrevPage}}
+                <li class="page-item">
+                    <a class="page-link text-primary" href="/blog?page={{prevPage}}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                {{else}}
+                <li class="page-item disabled">
+                    <span class="page-link">&laquo;</span>
+                </li>
+                {{/if}}
+
+                {{#each pages}}
+                <li class="page-item {{#if active}}active{{/if}}">
+                    <a class="page-link" href="/blog?page={{number}}">{{number}}</a>
+                </li>
+                {{/each}}
+
+                {{#if hasNextPage}}
+                <li class="page-item">
+                    <a class="page-link text-primary" href="/blog?page={{nextPage}}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+                {{else}}
+                <li class="page-item disabled">
+                    <span class="page-link">&raquo;</span>
+                </li>
+                {{/if}}
+            </ul>
+        </nav>
+    </div>

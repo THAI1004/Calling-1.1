@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Chỉnh sửa bài viết</title>
+    <script src="https://cdn.tiny.cloud/1/jruvlkn23rj72j2f2yibehgbemrtohi9z1xc3vp174ac4nx1/tinymce/6/tinymce.min.js"
+        referrerpolicy="origin"></script>
+    <style>
+        #preview-container img {
+            max-width: 200px;
+            margin-top: 10px;
+            border-radius: 4px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+    <script>
+        const images_upload_handler = async (blobInfo, progress) => {
+            const formData = new FormData();
+            formData.append('file', blobInfo.blob(), blobInfo.filename());
+
+            const response = await fetch('/upload-image', {
+                method: 'POST',
+                body: formData
+            });
+
+            const json = await response.json();
+
+            if (response.ok && typeof json.location === 'string') {
+                return json.location;
+            } else {
+                throw new Error('Upload thất bại hoặc phản hồi sai định dạng');
+            }
+        };
+
+        window.addEventListener('DOMContentLoaded', function () {
+            tinymce.init({
+                selector: '#editor',
+                height: 600,
+                plugins: [
+                    'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+                    'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+                    'insertdatetime', 'media', 'table', 'help', 'wordcount'
+                ],
+                toolbar: 'undo redo | blocks | bold italic underline strikethrough | ' +
+                    'alignleft aligncenter alignright alignjustify | ' +
+                    'bullist numlist outdent indent | removeformat | ' +
+                    'link image media table | code fullscreen preview',
+                menubar: 'file edit view insert format tools table help',
+                content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:16px }',
+                automatic_uploads: true,
+                images_upload_handler
+            });
+
+            const thumbnailInput = document.getElementById('thumbnail');
+            const previewContainer = document.getElementById('preview-container');
+
+            thumbnailInput.addEventListener('change', function (e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const imgPreview = document.createElement('img');
+                    imgPreview.src = URL.createObjectURL(file);
+                    imgPreview.alt = 'Xem trước ảnh đại diện';
+
+                    previewContainer.innerHTML = '';
+                    previewContainer.appendChild(imgPreview);
+                }
+            });
+        });
+    </script>
+</head>
+
+<body>
+    <h2>Chỉnh sửa bài viết</h2>
+    <form method="POST" action="/admin/blog/update/{{blog.id}}" enctype="multipart/form-data">
+        <label>Tiêu đề:</label><br>
+        <input type="text" name="title" value="{{blog.title}}" style="width:100%; padding:8px;"><br><br>
+
+        <label>Mô tả ngắn:</label><br>
+        <textarea name="description" rows="4" style="width:100%; padding:8px;">{{blog.description}}</textarea><br><br>
+
+        <label>Ảnh đại diện hiện tại:</label><br>
+        {{#if blog.thumbnail}}
+        <img src="/public{{blog.thumbnail}}" style="max-width:150px; border-radius:4px;"><br>
+        {{else}}<span>Không có</span><br>{{/if}}<br>
+
+        <label>Thay ảnh đại diện mới (nếu cần):</label><br>
+        <input type="file" name="thumbnail" id="thumbnail" accept="image/*"><br>
+        <div id="preview-container"></div><br>
+
+        <label>Nội dung:</label><br>
+        <textarea id="editor" name="noidung">{{{blog.content}}}</textarea><br>
+
+        <button type="submit" class="btn btn-primary">Cập nhật</button>
+    </form>
+</body>
+
+</html>

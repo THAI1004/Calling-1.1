@@ -1,0 +1,93 @@
+<div class="mb-3">
+  <div class="card-header">
+    <div class="row flex-between-end">
+      <div class="col-auto align-self-center">
+        <h3 class="mb-0">Danh sách liên hệ</h3>
+        <a class="btn btn-primary" href="/admin/contact/create">Thêm mới</a>
+      </div>
+    </div>
+  </div>
+  <div class="card-body pt-0">
+    <div class="tab-content">
+      <div class="tab-pane preview-tab-pane active" role="tabpanel">
+        <div id="tableContact"
+          data-list='{"valueNames":["stt","name","email","phone","subject","project","message","created"],"page":10,"pagination":true}'>
+          <div class="row justify-content-end g-0">
+            <div class="col-auto col-sm-5 mb-3">
+              <form>
+                <div class="input-group">
+                  <input class="form-control form-control-sm shadow-none search" type="search"
+                    placeholder="Tìm kiếm..." />
+                  <div class="input-group-text bg-transparent"><span class="fa fa-search fs-10 text-600"></span></div>
+                </div>
+              </form>
+            </div>
+          </div>
+          <div class="table-responsive scrollbar">
+            <table class="table table-bordered table-striped fs-10 mb-0">
+              <thead class="bg-200">
+                <tr>
+                  <th class="text-900 sort" data-sort="stt">STT</th>
+                  <th class="text-900 sort" data-sort="name">Tên</th>
+                  <th class="text-900 sort" data-sort="email">Email</th>
+                  <th class="text-900 sort" data-sort="phone">SĐT</th>
+                  <th class="text-900 sort" data-sort="subject">Chủ đề</th>
+                  <th class="text-900 sort" data-sort="project">Dự án</th>
+                  <th class="text-900 sort" data-sort="message">Nội dung</th>
+                  <th class="text-900 sort" data-sort="created">Ngày gửi</th>
+                </tr>
+              </thead>
+              <tbody class="list">
+                {{#each contacts}}
+                <tr>
+                  <td class="stt">{{inc @index}}</td>
+                  <td class="name">{{this.name}}</td>
+                  <td class="email">{{this.email}}</td>
+                  <td class="phone">{{this.phone}}</td>
+                  <td class="subject">{{this.subject}}</td>
+                  <td class="project">{{this.project}}</td>
+                  <td class="message">{{this.message}}</td>
+                  <td class="created">{{formatDate this.created_at "DD/MM/YYYY HH:mm"}}</td>
+
+                </tr>
+                {{/each}}
+              </tbody>
+            </table>
+          </div>
+          <div class="d-flex justify-content-center mt-3">
+            <button class="btn btn-sm btn-falcon-default me-1" type="button" title="Previous"
+              data-list-pagination="prev"><span class="fas fa-chevron-left"></span></button>
+            <ul class="pagination mb-0"></ul>
+            <button class="btn btn-sm btn-falcon-default ms-1" type="button" title="Next"
+              data-list-pagination="next"><span class="fas fa-chevron-right"></span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{#if success}}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  Swal.fire({
+    icon: 'success',
+    title: '{{success}}',
+    timer: 1500,
+    showConfirmButton: false
+  });
+</script>
+{{/if}}
+
+{{#if error}}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  Swal.fire({
+    icon: 'error',
+    title: 'Lỗi',
+    text: '{{error}}',
+    timer: 2000,
+    showConfirmButton: false
+  });
+</script>
+{{/if}}

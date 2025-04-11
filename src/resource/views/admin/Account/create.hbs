@@ -1,0 +1,130 @@
+<div class="card mb-3">
+  <div class="card-header">
+    <div class="row flex-between-end">
+      <div class="col-auto align-self-center">
+        <h5 class="mb-0" data-anchor="data-anchor">Thêm mới tài khoản</h5>
+        <a href="/admin/account" class="btn btn-primary">Quay lại</a>
+      </div>
+    </div>
+  </div>
+  <div class="card-body bg-body-tertiary">
+    <div class="tab-content">
+      <div class="tab-pane preview-tab-pane active" role="tabpanel"
+        aria-labelledby="tab-dom-f67caa75-8382-4955-a868-0bb582e5c807" id="dom-f67caa75-8382-4955-a868-0bb582e5c807">
+        <form action="/admin/account/store" method="post" onsubmit="return validateForm()">
+          <div class="mb-3">
+            <label class="form-label" for="fullname">Họ và tên</label>
+            <input class="form-control" id="fullname" name="fullname" type="text" placeholder="Full Name" />
+            <span class="text-danger" id="error-fullname"></span>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" for="username">Tài khoản</label>
+            <input class="form-control" id="username" name="username" type="text" placeholder="User name" />
+            <span class="text-danger" id="error-username"></span>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" for="password">Mật khẩu</label>
+            <input class="form-control" id="password" name="password" type="password" placeholder="Password" />
+            <span class="text-danger" id="error-password"></span>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" for="repassword">Nhập lại mật khẩu</label>
+            <input class="form-control" id="repassword" name="repassword" type="password" placeholder="Password" />
+            <span class="text-danger" id="error-repassword"></span>
+          </div>
+
+          <button class="btn btn-primary" type="submit">Submit</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  function validateForm() {
+    let isValid = true;
+    let firstErrorInput = null;
+
+    // Xóa lỗi cũ
+    clearError("fullname");
+    clearError("username");
+    clearError("password");
+    clearError("repassword");
+
+    const fullname = document.getElementById("fullname").value.trim();
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value;
+    const repassword = document.getElementById("repassword").value;
+
+    if (fullname === "") {
+      showError("fullname", "Vui lòng nhập họ và tên");
+      firstErrorInput = firstErrorInput || document.getElementById("fullname");
+      isValid = false;
+    }
+
+    if (username === "") {
+      showError("username", "Vui lòng nhập tài khoản");
+      firstErrorInput = firstErrorInput || document.getElementById("username");
+      isValid = false;
+    }
+
+    if (password.length < 6) {
+      showError("password", "Mật khẩu ít nhất 6 ký tự");
+      firstErrorInput = firstErrorInput || document.getElementById("password");
+      isValid = false;
+    }
+
+    if (password !== repassword) {
+      showError("repassword", "Mật khẩu nhập lại không khớp");
+      firstErrorInput = firstErrorInput || document.getElementById("repassword");
+      isValid = false;
+    }
+
+    if (firstErrorInput) {
+      firstErrorInput.focus();
+    }
+
+    return isValid;
+  }
+
+  function showError(id, message) {
+    document.getElementById(`error-${id}`).innerText = message;
+    document.getElementById(id).classList.add("is-invalid");
+  }
+
+  function clearError(id) {
+    document.getElementById(`error-${id}`).innerText = "";
+    document.getElementById(id).classList.remove("is-invalid");
+  }
+
+  // Xóa lỗi khi người dùng gõ
+  ["fullname", "username", "password", "repassword"].forEach(id => {
+    document.getElementById(id).addEventListener("input", () => clearError(id));
+  });
+</script>
+{{#if error}}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  Swal.fire({
+    icon: 'error',
+    title: 'Thêm mới thất bại',
+    text: "Tài khoản đã tồn tại!!!",
+    timer: 2000,
+    showConfirmButton: false
+  });
+</script>
+{{/if}}
+
+{{#if success}}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  Swal.fire({
+    icon: 'success',
+    title: 'Thêm mới thành công!!!',
+    timer: 1500,
+    showConfirmButton: false
+  });
+</script>
+{{/if}}
