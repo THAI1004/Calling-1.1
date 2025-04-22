@@ -6,6 +6,7 @@ import { log } from 'console';
 import Account from '../model/Account.js';
 import Contact from '../model/Contact.js';
 import Content from '../model/Blog.js';
+import bcrypt from 'bcrypt';
 
 
 
@@ -164,26 +165,28 @@ class HomeController {
         const { username, password } = req.body;
 
         try {
-            const user = await Account.findOne({ where: { username, password } });
+            // Tìm người dùng theo username
+            const user = await Account.findOne({ where: { username } });
 
             if (!user) {
-                // Sai tài khoản hoặc mật khẩu -> quay lại login kèm thông báo lỗi
-                return res.redirect('/login?error=1');
+                return res.redirect('/login?error=1'); // Tài khoản không tồn tại
             }
 
+            // So sánh mật khẩu nhập vào với mật khẩu đã hash
+            const isMatch = await bcrypt.compare(password, user.password);
+            if (!isMatch) {
+                return res.redirect('/login?error=1'); // Sai mật khẩu
+            }
+
+            // Kiểm tra quyền
             if (user.role !== "1") {
-                // Không phải admin -> hiện trang lỗi
-                return res.status(404).render('client/404');
+                return res.status(404).render('client/404'); // Không phải admin
             }
 
+            // Lưu session
             req.session.user_id = user.id;
-            req.session.save((err) => {
-                if (err) {
-                    console.error("Lỗi lưu session:", err);
-                    return res.status(500).send("Không thể lưu phiên đăng nhập.");
-                }
-                return res.redirect('/admin?success=Đăng nhập thành công!!!');
-            });
+
+            return res.redirect('/admin?success=Đăng nhập thành công!!!');
         } catch (error) {
             console.error('Lỗi đăng nhập:', error);
             return res.status(500).send('Lỗi máy chủ');
@@ -204,8 +207,13 @@ class HomeController {
                     success: null
                 });
             }
+
+            // Hash mật khẩu
+            const hashedPassword = await bcrypt.hash(password, 10); // số 10 là "salt rounds"
+
             // Tạo tài khoản mới
-            await Account.create({ fullname, username, password });
+            await Account.create({ fullname, username, password: hashedPassword });
+
             return res.redirect("/admin/account?success=Thêm tài khoản thành công!");
         } catch (error) {
             console.error("Lỗi tạo tài khoản:", error);

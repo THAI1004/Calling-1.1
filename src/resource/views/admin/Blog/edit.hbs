@@ -4,8 +4,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Chỉnh sửa bài viết</title>
-    <script src="https://cdn.tiny.cloud/1/jruvlkn23rj72j2f2yibehgbemrtohi9z1xc3vp174ac4nx1/tinymce/6/tinymce.min.js"
-        referrerpolicy="origin"></script>
     <style>
         #preview-container img {
             max-width: 200px;
@@ -14,60 +12,7 @@
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
         }
     </style>
-    <script>
-        const images_upload_handler = async (blobInfo, progress) => {
-            const formData = new FormData();
-            formData.append('file', blobInfo.blob(), blobInfo.filename());
 
-            const response = await fetch('/upload-image', {
-                method: 'POST',
-                body: formData
-            });
-
-            const json = await response.json();
-
-            if (response.ok && typeof json.location === 'string') {
-                return json.location;
-            } else {
-                throw new Error('Upload thất bại hoặc phản hồi sai định dạng');
-            }
-        };
-
-        window.addEventListener('DOMContentLoaded', function () {
-            tinymce.init({
-                selector: '#editor',
-                height: 600,
-                plugins: [
-                    'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
-                    'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
-                    'insertdatetime', 'media', 'table', 'help', 'wordcount'
-                ],
-                toolbar: 'undo redo | blocks | bold italic underline strikethrough | ' +
-                    'alignleft aligncenter alignright alignjustify | ' +
-                    'bullist numlist outdent indent | removeformat | ' +
-                    'link image media table | code fullscreen preview',
-                menubar: 'file edit view insert format tools table help',
-                content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:16px }',
-                automatic_uploads: true,
-                images_upload_handler
-            });
-
-            const thumbnailInput = document.getElementById('thumbnail');
-            const previewContainer = document.getElementById('preview-container');
-
-            thumbnailInput.addEventListener('change', function (e) {
-                const file = e.target.files[0];
-                if (file) {
-                    const imgPreview = document.createElement('img');
-                    imgPreview.src = URL.createObjectURL(file);
-                    imgPreview.alt = 'Xem trước ảnh đại diện';
-
-                    previewContainer.innerHTML = '';
-                    previewContainer.appendChild(imgPreview);
-                }
-            });
-        });
-    </script>
 </head>
 
 <body>
@@ -89,10 +34,99 @@
         <div id="preview-container"></div><br>
 
         <label>Nội dung:</label><br>
-        <textarea id="editor" name="noidung">{{{blog.content}}}</textarea><br>
+        <textarea id="default" name="noidung">{{{blog.content}}}</textarea><br>
 
         <button type="submit" class="btn btn-primary">Cập nhật</button>
     </form>
+    <script src="/public/tinymce/tinymce.min.js"></script>
+    <script>
+        tinymce.init({
+            selector: 'textarea#default',
+            width: 1000,
+            height: 300,
+            plugins: [
+                'advlist', 'autolink', 'link', 'image', 'lists', 'charmap', 'preview',
+                'anchor', 'pagebreak', 'searchreplace', 'wordcount', 'visualblocks',
+                'code', 'fullscreen', 'insertdatetime', 'media', 'table',
+                'emoticons', 'template', 'codesample', 'paste'
+            ],
+            toolbar: 'undo redo | styles | bold italic underline | alignleft aligncenter alignright alignjustify |' +
+                'bullist numlist outdent indent | image video media link | print preview fullscreen | ' +
+                'forecolor backcolor emoticons',
+            menubar: false,
+            content_style: 'body{font-family:Helvetica,Arial,sans-serif; font-size:16px}',
+            automatic_uploads: true,
+            images_upload_url: '/upload-image',
+            images_reuse_filename: true,
+            file_picker_types: 'image video',
+
+            // Upload ảnh & video
+            setup: function (editor) {
+                // Image button
+                editor.ui.registry.addButton('image', {
+                    icon: 'image',
+                    tooltip: 'Insert image',
+                    onAction: function () {
+                        const input = document.createElement('input');
+                        input.type = 'file';
+                        input.accept = 'image/*';
+                        input.onchange = function () {
+                            const file = input.files[0];
+                            if (!file) return;
+
+                            const formData = new FormData();
+                            formData.append('file', file);
+
+                            const xhr = new XMLHttpRequest();
+                            xhr.open('POST', '/upload-image'); // Use relative URL
+                            xhr.onload = function () {
+                                if (xhr.status === 200) {
+                                    const json = JSON.parse(xhr.responseText);
+                                    if (json.location) {
+                                        editor.insertContent(`<img src="${json.location}" />`);
+                                    }
+                                }
+                            };
+                            xhr.send(formData);
+                        };
+                        input.click();
+                    }
+                });
+
+                // Video button
+                editor.ui.registry.addButton('video', {
+                    icon: 'media',
+                    tooltip: 'Insert video',
+                    onAction: function () {
+                        const input = document.createElement('input');
+                        input.type = 'file';
+                        input.accept = 'video/*';
+                        input.onchange = function () {
+                            const file = input.files[0];
+                            if (!file) return;
+                            const formData = new FormData();
+                            formData.append('file', file);
+                            const xhr = new XMLHttpRequest();
+                            xhr.open('POST', '/upload-image'); // Use relative URL
+                            xhr.onload = function () {
+                                if (xhr.status == 200 || xhr.status == 201) {
+                                    const json = JSON.parse(xhr.responseText);
+                                    if (json.location) {
+                                        editor.insertContent(`<video src="${json.location}" controls style="max-width:100%"></video>`);
+                                    }
+                                }
+                            };
+                            xhr.onerror = function () {
+                                console.error("Network error during upload");
+                            };
+                            xhr.send(formData);
+                        };
+                        input.click();
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 
 </html>
