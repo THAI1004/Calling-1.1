@@ -1,0 +1,60 @@
+<div class="container mt-5">
+    <h2 class="mb-4">Thêm Mới</h2>
+
+    {{#if error}}
+    <div class="alert alert-danger">{{error}}</div>
+    {{/if}}
+    {{#if success}}
+    <div class="alert alert-success">{{success}}</div>
+    {{/if}}
+
+    <form id="contactForm" action="/admin/contact/store" method="POST" novalidate>
+        <div class="mb-3">
+            <label for="name" class="form-label">Họ và tên *</label>
+            <input type="text" class="form-control" id="name" name="name" required>
+            <div class="invalid-feedback">Vui lòng nhập họ và tên.</div>
+        </div>
+
+        <div class="mb-3">
+            <label for="email" class="form-label">Email *</label>
+            <input type="email" class="form-control" id="email" name="email" required>
+            <div class="invalid-feedback">Email không hợp lệ hoặc chưa nhập.</div>
+        </div>
+
+        <div class="mb-3">
+            <label for="phone" class="form-label">Số điện thoại</label>
+            <input type="text" class="form-control" id="phone" name="phone" pattern="^[0-9]{9,11}$">
+            <div class="invalid-feedback">Số điện thoại không hợp lệ.</div>
+        </div>
+
+        <div class="mb-3">
+            <label for="project" class="form-label">Dự án</label>
+            <input type="text" class="form-control" id="project" name="project">
+        </div>
+
+        <div class="mb-3">
+            <label for="subject" class="form-label">Chủ đề</label>
+            <input type="text" class="form-control" id="subject" name="subject">
+        </div>
+
+        <div class="mb-3">
+            <label for="message" class="form-label">Nội dung</label>
+            <textarea class="form-control" id="message" name="message" rows="5"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Lưu</button>
+        <a href="/admin/contact" class="btn btn-secondary">Quay lại</a>
+    </form>
+</div>
+
+<script>
+    // Bootstrap validation
+    const form = document.getElementById('contactForm');
+    form.addEventListener('submit', function (event) {
+        if (!form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+    });
+</script>

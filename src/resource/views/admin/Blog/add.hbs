@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Trình soạn thảo TinyMCE</title>
+  <style>
+    #preview-container img {
+      max-width: 200px;
+      margin-top: 10px;
+      border-radius: 4px;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .tox-statusbar__branding,
+    .tox-promotion {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <h2>Soạn thảo nội dung</h2>
+  <form method="POST" action="/admin/blog/store" enctype="multipart/form-data">
+    <label for="title">Tiêu đề:</label><br>
+    <input type="text" id="title" name="title" style="width: 100%; padding: 8px;"><br><br>
+
+    <label for="description">Mô tả ngắn:</label><br>
+    <textarea id="description" name="description" rows="4" style="width: 100%; padding: 8px;"></textarea><br><br>
+
+    <label for="thumbnail">Ảnh đại diện:</label><br>
+    <input type="file" id="thumbnail" name="thumbnail" accept="image/*" style="width: 100%; padding: 8px;"><br>
+    <div id="preview-container"></div><br>
+
+    <label for="editor">Nội dung:</label><br>
+    <textarea name="noidung" id="default"></textarea>
+    <br>
+    <button class="btn btn-primary" type="submit">Lưu</button>
+  </form>
+  <script src="/public/tinymce/tinymce.min.js"></script>
+  <script>
+    tinymce.init({
+      selector: 'textarea#default',
+      width: 1000,
+      height: 300,
+      plugins: [
+        'advlist', 'autolink', 'link', 'image', 'lists', 'charmap', 'preview',
+        'anchor', 'pagebreak', 'searchreplace', 'wordcount', 'visualblocks',
+        'code', 'fullscreen', 'insertdatetime', 'media', 'table',
+        'emoticons', 'template', 'codesample', 'paste'
+      ],
+      toolbar: 'undo redo | styles | bold italic underline | alignleft aligncenter alignright alignjustify |' +
+        'bullist numlist outdent indent | image video media link | print preview fullscreen | ' +
+        'forecolor backcolor emoticons',
+      menubar: false,
+      content_style: 'body{font-family:Helvetica,Arial,sans-serif; font-size:16px}',
+      automatic_uploads: true,
+      images_upload_url: '/upload-image',
+      images_reuse_filename: true,
+      file_picker_types: 'image video',
+
+      // Upload ảnh & video
+      setup: function (editor) {
+        // Image button
+        editor.ui.registry.addButton('image', {
+          icon: 'image',
+          tooltip: 'Insert image',
+          onAction: function () {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = function () {
+              const file = input.files[0];
+              if (!file) return;
+
+              const formData = new FormData();
+              formData.append('file', file);
+
+              const xhr = new XMLHttpRequest();
+              xhr.open('POST', '/upload-image'); // Use relative URL
+              xhr.onload = function () {
+                if (xhr.status === 200) {
+                  const json = JSON.parse(xhr.responseText);
+                  if (json.location) {
+                    editor.insertContent(`<img src="${json.location}" />`);
+                  }
+                }
+              };
+              xhr.send(formData);
+            };
+            input.click();
+          }
+        });
+
+        // Video button
+        editor.ui.registry.addButton('video', {
+          icon: 'media',
+          tooltip: 'Insert video',
+          onAction: function () {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'video/*';
+            input.onchange = function () {
+              const file = input.files[0];
+              if (!file) return;
+              const formData = new FormData();
+              formData.append('file', file);
+              const xhr = new XMLHttpRequest();
+              xhr.open('POST', '/upload-image'); // Use relative URL
+              xhr.onload = function () {
+                if (xhr.status == 200 || xhr.status == 201) {
+                  const json = JSON.parse(xhr.responseText);
+                  if (json.location) {
+                    editor.insertContent(`<video src="${json.location}" controls style="max-width:100%"></video>`);
+                  }
+                }
+              };
+              xhr.onerror = function () {
+                console.error("Network error during upload");
+              };
+              xhr.send(formData);
+            };
+            input.click();
+          }
+        });
+      }
+    });
+  </script>
+</body>
+
+</html>

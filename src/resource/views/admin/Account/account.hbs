@@ -1,0 +1,93 @@
+<div class=" mb-3">
+  <div class="card-header">
+    <div class="row flex-between-end">
+      <div class="col-auto align-self-center">
+        <h3 class="mb-0" data-anchor="data-anchor">Danh sách tài khoản</h3>
+        <a href="/admin/account/create" class=" btn btn-primary">Thêm mới</a>
+      </div>
+    </div>
+  </div>
+  <div class="card-body pt-0">
+    <div class="tab-content">
+      <div class="tab-pane preview-tab-pane active" role="tabpanel"
+        aria-labelledby="tab-dom-da4be276-f13c-47d6-be82-655bc6452fd5" id="dom-da4be276-f13c-47d6-be82-655bc6452fd5">
+        <div id="tableExample3"
+          data-list='{"valueNames":["stt","fullname","username",role],"page":10,"pagination":true}'>
+          <div class="row justify-content-end g-0">
+            <div class="col-auto col-sm-5 mb-3">
+              <form>
+                <div class="input-group"><input class="form-control form-control-sm shadow-none search" type="search"
+                    placeholder="Tìm kiếm..." aria-label="search" />
+                  <div class="input-group-text bg-transparent"><span class="fa fa-search fs-10 text-600"></span></div>
+                </div>
+              </form>
+            </div>
+          </div>
+          <div class="table-responsive scrollbar">
+            <table class="table table-bordered table-striped fs-10 mb-0">
+              <thead class="bg-200">
+                <tr>
+                  <th class="text-900 sort" data-sort="stt">STT</th>
+                  <th class="text-900 sort" data-sort="fullname">Họ và tên</th>
+                  <th class="text-900 sort" data-sort="username">Tài khoản</th>
+                  <th class="text-900 sort" data-sort="role">Quyền</th>
+                  <th class="text-900 sort" data-sort="action">Tương tác</th>
+                </tr>
+              </thead>
+              <tbody class="list">
+                {{#each user}}
+                <tr>
+                  <td class="stt">{{inc @index}}</td>
+                  <td class="fullname">{{fullname}}</td>
+                  <td class="username">{{username}}</td>
+                  <td class="role">
+                    {{#if (eq role "1")}}Admin{{else}}User{{/if}}
+                  </td>
+                  <td style="width: 110px; white-space: nowrap;">
+                    <a href="/admin/account/delete/{{id}}" onclick="return confirm('Bạn có chắc chắn muốn xóa không?')"
+                      class="btn btn-danger">Xóa</a>
+                    <a href="/admin/account/edit/{{id}}" class="btn btn-warning">Sửa</a>
+                  </td>
+
+                </tr>
+                {{/each}}
+              </tbody>
+
+            </table>
+          </div>
+          <div class="d-flex justify-content-center mt-3"><button class="btn btn-sm btn-falcon-default me-1"
+              type="button" title="Previous" data-list-pagination="prev"><span
+                class="fas fa-chevron-left"></span></button>
+            <ul class="pagination mb-0"></ul><button class="btn btn-sm btn-falcon-default ms-1" type="button"
+              title="Next" data-list-pagination="next"><span class="fas fa-chevron-right"> </span></button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+{{#if error}}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  Swal.fire({
+    icon: 'error',
+    title: error,
+    text: error,
+    timer: 2000,
+    showConfirmButton: false
+  });
+</script>
+{{/if}}
+
+{{#if success}}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  Swal.fire({
+    icon: 'success',
+    title: success,
+    timer: 1500,
+    showConfirmButton: false
+  });
+</script>
+{{/if}}
