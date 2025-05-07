@@ -6,7 +6,7 @@ import { log } from 'console';
 import Account from '../model/Account.js';
 import Contact from '../model/Contact.js';
 import Content from '../model/Blog.js';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 
 
 
