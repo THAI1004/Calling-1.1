@@ -20,8 +20,9 @@ class HomeController {
         res.render("client/home", {
             title: 'Calling - Tổng đài CSKH Đa Kênh Ai',
             isHome: true,
-            success, // <-- Truyền biến success vào view
-            error
+            success,
+            error,
+            activePage: 'home'
         }
         )
     }
@@ -33,7 +34,8 @@ class HomeController {
             title: 'Calling - Tổng đài CSKH Đa Kênh Ai',
             // layout: true
             success, // <-- Truyền biến success vào view
-            error
+            error,
+            activePage: 'about'
         }
         )
     }
@@ -44,7 +46,8 @@ class HomeController {
         res.render("client/contact", {
             title: 'Calling - Tổng đài CSKH Đa Kênh Ai',
             success, // <-- Truyền biến success vào view
-            error
+            error,
+            activePage: 'contact'
         });
     }
 
@@ -56,7 +59,8 @@ class HomeController {
             title: 'Calling - Tổng đài CSKH Đa Kênh Ai',
             // layout: true
             success, // <-- Truyền biến success vào view
-            error
+            error,
+            activePage: 'feature'
         }
         )
     }
@@ -68,7 +72,8 @@ class HomeController {
             title: 'Calling - Tổng đài CSKH Đa Kênh Ai',
             // layout: true
             success, // <-- Truyền biến success vào view
-            error
+            error,
+            activePage: 'pricing'
         }
         )
     }
@@ -80,7 +85,8 @@ class HomeController {
             title: 'Calling - Tổng đài CSKH Đa Kênh Ai',
             // layout: true
             success, // <-- Truyền biến success vào view
-            error
+            error,
+            activePage: 'service'
         }
         )
     }
@@ -135,7 +141,8 @@ class HomeController {
         res.render("client/testimonial", {
             title: 'Calling - Tổng đài CSKH Đa Kênh Ai',
             success, // <-- Truyền biến success vào view
-            error
+            error,
+            activePage: 'testimonial'
         });
     }
     async LienHe(req, res) {

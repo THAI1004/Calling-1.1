@@ -58,13 +58,14 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarCollapse">
             <div class="navbar-nav ms-auto py-0">
-                <a href="/" class="nav-item nav-link active">Trang chủ</a>
-                <a href="/about" class="nav-item nav-link">Giới thiệu</a>
-                <a href="/feature" class="nav-item nav-link">Tính năng</a>
-                <a href="/service" class="nav-item nav-link">Dịch vụ</a>
-                <a href="/pricing" class="nav-item nav-link">Báo giá</a>
-                <a href="/contact" class="nav-item nav-link">Liên hệ</a>
-                <a href="/blog" class="nav-item nav-link">Tin tức</a>
+                <a href="/" class="nav-item nav-link {{#if (eq activePage 'home')}}active{{/if}}">Trang chủ</a>
+                <a href="/about" class="nav-item nav-link {{#if (eq activePage 'about')}}active{{/if}}">Giới thiệu</a>
+                <a href="/feature" class="nav-item nav-link {{#if (eq activePage 'feature')}}active{{/if}}">Tính
+                    năng</a>
+                <a href="/service" class="nav-item nav-link {{#if (eq activePage 'service')}}active{{/if}}">Dịch vụ</a>
+                <a href="/pricing" class="nav-item nav-link {{#if (eq activePage 'pricing')}}active{{/if}}">Báo giá</a>
+                <a href="/contact" class="nav-item nav-link {{#if (eq activePage 'contact')}}active{{/if}}">Liên hệ</a>
+                <a href="/blog" class="nav-item nav-link {{#if (eq activePage 'blog')}}active{{/if}}">Tin tức</a>
             </div>
             {{!-- <a href="#" class="btn btn-light border border-primary rounded-pill text-primary py-2 px-4 me-4">Log
                 In</a>
